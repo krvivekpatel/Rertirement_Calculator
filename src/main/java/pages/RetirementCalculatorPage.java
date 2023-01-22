@@ -1,17 +1,25 @@
 package pages;
 
 
+import java.util.Map;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
-import factory.BrowserFactory;
 import helper.Utility;
 
 public class RetirementCalculatorPage {
 	WebDriver driver;
-
-	public RetirementCalculatorPage(WebDriver driver) {
+	String testCaseID;
+	Map<String, Map<String,String>> excelData ;
+	public String getTestCaseID() {
+		return testCaseID;
+	}
+	public void setTestCaseID(String testCaseID) {
+		this.testCaseID = testCaseID;
+	}
+	public RetirementCalculatorPage(WebDriver driver) {		
+		excelData = Utility.getDataFromExcel();
 		this.driver = driver;
 	}
 
@@ -47,14 +55,14 @@ public class RetirementCalculatorPage {
 	By adjust_default_value = By.xpath("//a[text()='Adjust default values']");
 
 	public void enterRetrimentDetails() throws InterruptedException {
-		driver.findElement(current_age).sendKeys("28");
-		driver.findElement(retirement_age).sendKeys("60");
+		driver.findElement(current_age).sendKeys(excelData.get(testCaseID).get("current-age"));
+		driver.findElement(retirement_age).sendKeys(excelData.get(testCaseID).get("retirement-age"));
 		driver.findElement(current_income).click();
-		driver.findElement(current_income).sendKeys("1");
-		Utility.enterValue(driver, spouse_income, "3", "spouse-income");
-		Utility.enterValue(driver, current_total_savings, "4", "current-total-savings");
-		driver.findElement(current_annual_savings).sendKeys("5");
-		driver.findElement(savings_increase_rate).sendKeys("5");
+		driver.findElement(current_income).sendKeys(excelData.get(testCaseID).get("current-income"));
+		Utility.enterValue(driver, spouse_income, excelData.get(testCaseID).get("spouse-income"), "spouse-income");
+		Utility.enterValue(driver, current_total_savings, excelData.get(testCaseID).get("current-total-savings"), "current-total-savings");
+		driver.findElement(current_annual_savings).sendKeys(excelData.get(testCaseID).get("current-annual-savings"));
+		driver.findElement(savings_increase_rate).sendKeys(excelData.get(testCaseID).get("savings-increase-rate"));
 		/*
 		 * JavascriptExecutor js = (JavascriptExecutor) driver;
 		 * js.executeScript("arguments[0].scrollIntoView(true);",
@@ -64,14 +72,14 @@ public class RetirementCalculatorPage {
 public void updateDefaultCalulatorValue() throws InterruptedException {
 	Thread.sleep(3000);
 	driver.findElement(additional_income).click();
-	driver.findElement(additional_income).sendKeys("22");
-	driver.findElement(retirement_duration).sendKeys("33");
+	driver.findElement(additional_income).sendKeys(excelData.get(testCaseID).get("additional-income"));
+	driver.findElement(retirement_duration).sendKeys(excelData.get(testCaseID).get("retirement-duration"));
 	//driver.findElement(By.id("inflation-label")).click();
 	Utility.clickRadioButton(driver, include_nflation_yes);
-	Utility.enterValue(driver, expected_inflation_rate, "3", "expected-inflation-rate");
-	Utility.enterValue(driver, retirement_annual_income, "24", "retirement-annual-income");
-	Utility.enterValue(driver, pre_retirement_invst_return, "3", "pre-retirement-roi");
-	Utility.enterValue(driver, post_retirement_invst_return, "7", "post-retirement-roi");
+	Utility.enterValue(driver, expected_inflation_rate, excelData.get(testCaseID).get("expected_inflation_rate"), "expected-inflation-rate");
+	Utility.enterValue(driver, retirement_annual_income, excelData.get(testCaseID).get("expected_inflation_rate"), "retirement-annual-income");
+	Utility.enterValue(driver, pre_retirement_invst_return, excelData.get(testCaseID).get("pre_retirement_invst_return"), "pre-retirement-roi");
+	Utility.enterValue(driver, post_retirement_invst_return,excelData.get(testCaseID).get("post_retirement_invst_return"), "post-retirement-roi");
 	//driver.findElement(By.id("expected_inflation_rate")).sendKeys("4");
 	//driver.findElement(By.id("retirement_annual_income")).sendKeys("24");
 	//driver.findElement(By.id("pre_retirement_invst_return")).sendKeys("3");
@@ -101,7 +109,7 @@ public void updateDefaultCalulatorValue() throws InterruptedException {
 	public void selectSocialSecurityBenefitAsYes() {
 		driver.findElement(By.id("include-social-label")).click();
 		Utility.clickRadioButton(driver, yes_social_benefits);
-		Utility.enterValue(driver, social_security_override, "3", "social-security-override");
+		Utility.enterValue(driver, social_security_override,excelData.get(testCaseID).get("social_security_override"), "social-security-override");
 	}
 	public boolean verifyMartialStatusSection() {
 		return driver.findElement(married).isDisplayed();		

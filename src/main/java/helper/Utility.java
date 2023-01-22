@@ -4,41 +4,54 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.compress.archivers.dump.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Utility {
 
+public static String getValueFromPropFile(String key) {
+	String propFilePath =System.getProperty("user.dir") + "/config.properties";
+	FileInputStream fis = null;
+    Properties prop = null;
+    String value = null;
+    try {
+       fis = new FileInputStream(propFilePath);
+       prop = new Properties();
+       prop.load(fis);
+        value = prop.getProperty(key);
+    } catch(FileNotFoundException fnfe) {
+       fnfe.printStackTrace();
+    } catch(IOException ioe) {
+       ioe.printStackTrace();
+    } finally {
+       try {
+		fis.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    }
+    return value;
+ }
 	
+
 	public static WebElement waitForWebElement(WebDriver driver, By locator) {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 		 wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
 		return null;
 	}
@@ -54,7 +67,7 @@ public class Utility {
 	}
 	public static WebElement clickRadioButton(WebDriver driver, By locator) {
 
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator)); 
 		System.out.println("Radio button "+element.isSelected());
 		((JavascriptExecutor)driver).executeScript("arguments[0].click();", element);
@@ -183,13 +196,65 @@ public class Utility {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-		int row = getData("TC_002");
-		System.out.println(row);
+	public static Map<String, Map<String, String>> getDataFromExcel() {
+		
+		String testCaseID = "";
+		Map<String, Map<String, String>> excelData = new HashMap<String, Map<String, String>>();
+		String path = System.getProperty("user.dir") + "/testData/TestData.xlsx";
+		File file = new File(path);
+		FileInputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(file);
+			Workbook workbook = WorkbookFactory.create(inputStream);
+			Sheet sheet = workbook.getSheet("testdata");
+			int rowCount = sheet.getLastRowNum();
+			for (int i = 1; i <= rowCount; i++) {
+				Row row = sheet.getRow(0);
+				testCaseID=sheet.getRow(i).getCell(0).getStringCellValue();
+				Map<String, String> rowData = new HashMap<>();
+				for (int j = 0; j < row.getLastCellNum(); j++) {
+
+					String key = row.getCell(j).getStringCellValue();
+					String value = sheet.getRow(i).getCell(j).getStringCellValue();
+					//id = i;
+					rowData.put(key, value);
+				}
+				excelData.put(testCaseID, rowData);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return excelData;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(getValueFromPropFile("url"));
+		String name = "[TC_001] User should be able to submit form with all required fields filled in";
+		String namearr[] = name.split("]");
+		String testcaseid =  namearr[0].substring(1, namearr[0].length());
+		System.out.println(testcaseid);
+		
 		/*
-		 * Map<Integer, Map<String,String>> excel = getData();
-		 * for(Entry<Integer,Map<String,String>> map : excel.entrySet()) {
-		 * System.out.println(map.getValue()); }
+		 * int row = getData("TC_002"); System.out.println(row);
 		 */
+		
+		
+		  Map<String, Map<String,String>> excel = getDataFromExcel(); 
+		  System.out.println(excel.get(testcaseid).get("Description"));
+		  for(Entry<String,
+		  Map<String, String>> map : excel.entrySet()) {
+		  System.out.println(map.getKey()); System.out.println(map.getValue()); }
+		 		 
 	}
 }

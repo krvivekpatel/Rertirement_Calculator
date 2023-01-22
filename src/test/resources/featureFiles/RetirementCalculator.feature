@@ -1,7 +1,7 @@
 Feature: Verify retirement calculator
 
   @tc001 @regression
-  Scenario: User should be able to submit form with all required fields filled in
+  Scenario: [TC_001] User should be able to submit form with all required fields filled in
     Given User is available on calulator screen
     When User provide all input details
     And social security benefit select as No
@@ -9,7 +9,7 @@ Feature: Verify retirement calculator
     Then result message should be displayed
     
 	@tc002 @regression
-  Scenario: Additional Social Security fields should display/hide based on Social Security benefits toggle
+  Scenario: [TC_002] Additional Social Security fields should display/hide based on Social Security benefits toggle
     Given User is available on calulator screen
     When User provide all input details
     And social security benefit select as Yes
@@ -18,7 +18,7 @@ Feature: Verify retirement calculator
     Then martial status section should not be displayed
 
 	 @tc003 @regression
-  Scenario: User should be able to submit form with all fields filled in
+  Scenario: [TC_003] User should be able to submit form with all fields filled in
     Given User is available on calulator screen
     When User provide all input details
     And social security benefit select as Yes
@@ -27,7 +27,7 @@ Feature: Verify retirement calculator
     Then result message should be displayed
     
    @tc004 @regression
-  Scenario: User should be able to update default calculator values
+  Scenario: [TC_004] User should be able to update default calculator values
     Given User is available on calulator screen
     When User provide all input details
 		And social security benefit select as No

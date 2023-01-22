@@ -2,7 +2,11 @@ package stepDefinations;
 
 import org.junit.Assert;
 
+import Hooks.Hooks;
 import factory.BrowserFactory;
+import helper.Constant;
+import helper.Utility;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -11,12 +15,14 @@ import pages.RetirementCalculatorPage;
 public class RetirementCalculatorStepDefination {
 
 	RetirementCalculatorPage calculatorPage;
-	
+	Scenario scenario;
 	@Given("User is available on calulator screen")
 	public void user_is_available_on_calulator_screen() {
 		calculatorPage=new RetirementCalculatorPage(BrowserFactory.getDriver());
-		BrowserFactory.getDriver().get("https://www.securian.com/insights-tools/retirement-calculator.html");
+		BrowserFactory.getDriver().get(Utility.getValueFromPropFile("url"));
 		BrowserFactory.getDriver().manage().window().maximize();
+		System.out.println(calculatorPage.getTestCaseID());
+		calculatorPage.setTestCaseID(Constant.testCaseID);
 	}
 
 	@When("User provide all input details")
